@@ -1,0 +1,33 @@
+{
+    "name": "dlds/yii2-jqhooks",
+    "description": "Yii2 jQuery action hooks",
+    "keywords": ["yii2", "jQuery", "helpers"],
+    "type": "yii2-extension",
+    "license": "BSD",
+    "support": {
+        "issues": "https://github.com/dlds/yii2-jqhooks/issues",
+        "wiki": "https://github.com/dlds/yii2-jqhooks/wiki",
+        "source": "https://github.com/dlds/yii2-jqhooks"
+    },
+    "authors": [
+        {
+            "name": "Jiri Svoboda",
+            "email": "jiri.svoboda@dlds.cz"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "~2.0.0"
+    },
+    "require-dev": {
+        "yiisoft/yii2-codeception": "*",
+        "yiisoft/yii2-debug": "*",
+        "yiisoft/yii2-faker": "*",
+        "codeception/specify": "*",
+        "codeception/verify": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "dlds\\jqhooks\\": "src"
+        }
+    }
+}
