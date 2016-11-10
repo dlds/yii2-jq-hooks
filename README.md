@@ -90,7 +90,5 @@ JqHooks::attach([
   'click' => [
       ['show:hide' 'overlay', 'return this.val() === 1'],
   ]
-], '#wrapper-element-id')
+])
 ```
-
-When you specifies **#wrapper-element-id** `JqHooks` inits events only inside this wrapper.
