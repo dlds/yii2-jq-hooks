@@ -102,7 +102,7 @@ var Hooks = function () {
         }
 
         // find all elements basen on given selector
-        var elements = context.find('[data-had]');
+        var elements = _jq(context).find('[data-had]');
 
         // if no element exists return FALSE
         if (!elements.length) {
@@ -304,7 +304,7 @@ var Hooks = function () {
             hooks.addClass('open');
         }
 
-        console.log('[done] doOpen');
+        //console.log('[done] doOpen');
     };
 
     /**
@@ -318,7 +318,7 @@ var Hooks = function () {
             hooks.removeClass('open');
         }
 
-        console.log('[done] doClose');
+        //console.log('[done] doClose');
     };
 
     /**
@@ -332,7 +332,7 @@ var Hooks = function () {
             hooks.toggle();
         }
 
-        console.log('[done] doToggle');
+        //console.log('[done] doToggle');
     };
 
     /**
@@ -346,7 +346,7 @@ var Hooks = function () {
             hooks.show();
         }
 
-        console.log('[done] doShow');
+        //console.log('[done] doShow');
     };
 
     /**
@@ -360,7 +360,7 @@ var Hooks = function () {
             hooks.hide();
         }
 
-        console.log('[done] doHide');
+        //console.log('[done] doHide');
     };
 
     /**
@@ -374,7 +374,7 @@ var Hooks = function () {
             hooks.prop('checked', true);
         }
 
-        console.log('[done] doCheck');
+        //console.log('[done] doCheck');
     };
 
     /**
@@ -388,7 +388,7 @@ var Hooks = function () {
             hooks.prop('checked', false);
         }
 
-        console.log('[done] doUncheck');
+        //console.log('[done] doUncheck');
     };
 
     /**

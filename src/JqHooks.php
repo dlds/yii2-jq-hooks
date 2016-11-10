@@ -27,7 +27,7 @@ class JqHooks extends \yii\gii\Module
     public static function attach($had, $id)
     {
         static::jsAsset($id);
-        return new \yii\web\JsExpression($had);
+        return $had;
     }
 
     /**
@@ -36,9 +36,9 @@ class JqHooks extends \yii\gii\Module
      */
     protected static function jsAsset($id)
     {
-        JqHooksAsset::register(\Yii::$app->view);
+        assets\JqHooksAsset::register(\Yii::$app->view);
 
-        \Yii::$app->registerJs("
+        \Yii::$app->view->registerJs("
             Hooks.init('$id');
         ");
     }
