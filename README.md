@@ -1,4 +1,4 @@
-# Action hooks
+# jQuery action hooks
 
 Action hooks is simple jQuery helper library. Used when jQuery operation like show, hide, toggle, ... are required to attach with conditional ability.
 
@@ -9,13 +9,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```bash
-$ composer require dlds/yii2-action-hooks
+$ composer require dlds/yii2-jqhooks
 ```
 
 or add
 
 ```
-"dlds/yii2-action-hooks": "~1.0"
+"dlds/yii2-jqhooks": "~1.0"
 ```
 
 to the `require` section of your `composer.json` file.
