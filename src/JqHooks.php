@@ -17,7 +17,7 @@ use yii\helpers\ArrayHelper;
  *
  * @author Jiri Svoboda <jiri.svoboda@dlds.cz>
  */
-class JqHooks extends \yii\gii\Module
+class JqHooks extends \yii\base\Module
 {
 
     /**
@@ -30,7 +30,11 @@ class JqHooks extends \yii\gii\Module
     const ACT_TOGGLE = 'toggle';
     const ACT_CHECK = 'check';
     const ACT_UNCHECK = 'uncheck';
-
+    const ACT_FOCUS = 'focus';
+    const ACT_BLUR = 'blur';
+    const ACT_TRIGGER = 'trigger';
+    
+    
     /**
      * @var boolean
      */

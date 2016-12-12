@@ -16,7 +16,7 @@
  * ---
  * Hook action definition (data-had) format: {
  *      'jqEevent' => [
- *          ['hookActionName' 'hookName', 'hookActionCondition'],
+ *          ['hookActionName' 'hookName', 'hookActionCondition', 'hookActionParams],
  *      ]
  * }
  * 
@@ -28,6 +28,8 @@
  * prefixed with 'do' (doClose, doOpen, doToggle, ...)
  * 
  * 3. hookName: custom string which reflects value of 'data-hook' attr assigned to target element
+ *
+ * 4. hookActionParams: optional action params that will be pushed to action
  * 
  * 4. hookActionCondition: callback or simple fn definition which will be processed as js function.
  * This condition allows you to define when the action will be processed.
@@ -171,8 +173,33 @@ var Hooks = function () {
                 return doCheck(had);
             case 'uncheck':
                 return doUncheck(had);
+            case 'focus':
+                return doFocus(had);
+            case 'blur':
+                return doBlur(had);
+            case 'trigger':
+                return doTrigger(had, node);
         }
     };
+
+    /**
+     * Condition definition process
+     * ---
+     * Retrieves result of condition definition
+     * ---
+     * @param Array had
+     * @param {Object} node
+     * @returns {boolean}
+     */
+    var _cnd = function (df, node) {
+
+        if (false === df || true === df) {
+            return df;
+        }
+
+        var fn = new Function(df);
+        return fn.apply(_jq(node));
+    }
 
     /**
      * Indicates if action is doable
@@ -180,18 +207,12 @@ var Hooks = function () {
      * Runs and retrieve result of 'hookActionCondition'
      * ---
      * @param Array had
+     * @param {Object} node
      * @returns {boolean}
      */
     var _doable = function (had, node) {
 
-        var cond = hadCond(had);
-
-        if (false === cond || true === cond) {
-            return cond;
-        }
-
-        var fn = new Function(cond);
-        return fn.apply(_jq(node));
+        return _cnd(hadCond(had), node);
     };
 
     /**
@@ -202,7 +223,7 @@ var Hooks = function () {
      */
     var _fn = function (had, node) {
 
-        var ternary = _ternary(had);
+        var ternary = _ternary(hadName(had));
 
         if (!_doable(had, node)) {
             return ternary.negative;
@@ -216,23 +237,21 @@ var Hooks = function () {
      * @param {type} had
      * @returns {Object}
      */
-    var _ternary = function (had) {
+    var _ternary = function (df) {
 
         var opts = {
             positive: false,
             negative: false,
         };
 
-        var doName = hadName(had);
-
-        if (false === doName) {
+        if (false === df) {
             return opts;
         }
 
-        var names = doName.split(':');
+        var names = df.split(':');
 
         if (!$.isArray(names)) {
-            opts.positive = doName;
+            opts.positive = df;
             return opts;
         }
 
@@ -248,7 +267,7 @@ var Hooks = function () {
      * @returns {boolean}
      */
     var isHad = function (had) {
-        return $.isArray(had) && (had.length === 2 || had.length === 3);
+        return $.isArray(had) && (had.length >= 2 && had.length <= 4);
     }
 
     /**
@@ -291,6 +310,20 @@ var Hooks = function () {
         }
 
         return had[2] || true;
+    };
+
+    /**
+     * Retrieves action params
+     * @param {Array} had
+     * @returns {String|Boolean}
+     */
+    var hadParams = function (had) {
+        // check if is valid definition
+        if (!isHad(had)) {
+            return false;
+        }
+
+        return had[3] || true;
     };
 
     /**
@@ -389,6 +422,55 @@ var Hooks = function () {
         }
 
         //console.log('[done] doUncheck');
+    };
+
+    /**
+     * Focuses all targeted checkboxes
+     */
+    var doFocus = function (had) {
+
+        var hooks = _hooks(hadHook(had));
+
+        if (hooks) {
+            hooks.focus();
+        }
+
+        //console.log('[done] doFocus');
+    };
+
+    /**
+     * Blur all targeted checkboxes
+     */
+    var doBlur = function (had) {
+
+        var hooks = _hooks(hadHook(had));
+
+        if (hooks) {
+            hooks.blur();
+        }
+
+        //console.log('[done] doBlur');
+    };
+
+    /**
+     * Toggles all targeted checkboxes
+     */
+    var doTrigger = function (had, node) {
+
+        var hooks = _hooks(hadHook(had));
+
+        if (hooks) {
+
+            var params = _ternary(hadParams(had));
+
+            if (_cnd(hadCond(had), node)) {
+                hooks.trigger(params.positive);
+            } else {
+                hooks.trigger(params.negative);
+            }
+        }
+
+        //console.log('[done] doTrigger');
     };
 
     /**
