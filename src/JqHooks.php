@@ -33,8 +33,10 @@ class JqHooks extends \yii\base\Module
     const ACT_FOCUS = 'focus';
     const ACT_BLUR = 'blur';
     const ACT_TRIGGER = 'trigger';
-    
-    
+    const ACT_CLASS_ADD = 'class-add';
+    const ACT_CLASS_RMW = 'class-rmw';
+    const ACT_CLASS_TGL = self::ACT_CLASS_ADD . ':' . self::ACT_CLASS_RMW;
+
     /**
      * @var boolean
      */

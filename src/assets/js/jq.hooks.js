@@ -177,6 +177,10 @@ var Hooks = function () {
                 return doFocus(had);
             case 'blur':
                 return doBlur(had);
+            case 'class-add':
+                return doClassAdd(had);
+            case 'class-rmw':
+                return doClassRmw(had);
             case 'trigger':
                 return doTrigger(had, node);
         }
@@ -453,7 +457,7 @@ var Hooks = function () {
     };
 
     /**
-     * Toggles all targeted checkboxes
+     * Trigger specified event all targets
      */
     var doTrigger = function (had, node) {
 
@@ -471,6 +475,36 @@ var Hooks = function () {
         }
 
         //console.log('[done] doTrigger');
+    };
+
+    /**
+     * Adds class to all targets
+     */
+    var doClassAdd = function (had) {
+
+        var hooks = _hooks(hadHook(had));
+
+        if (hooks) {
+
+            hooks.addClass(hadParams(had));
+        }
+
+        //console.log('[done] doClassAdd');
+    };
+
+    /**
+     * Removes class from all targets
+     */
+    var doClassRmw = function (had) {
+
+        var hooks = _hooks(hadHook(had));
+
+        if (hooks) {
+
+            hooks.removeClass(hadParams(had));
+        }
+
+        //console.log('[done] doClassRmw');
     };
 
     /**
