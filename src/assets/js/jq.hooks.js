@@ -120,16 +120,21 @@ var Hooks = function () {
      * @param String name given hookName
      * @return Object
      */
-    var _hooks = function (name) {
+    var _hooks = function (name, node) {
 
         // cancel if name does not exist
         if (name === undefined) {
-            return false;
+            return node;
         }
 
         // cache hooks if they are not yet
         if (!cache.hooks.hasOwnProperty(name) || null === cache.hooks[name]) {
             cache.hooks[name] = $('[data-hook="' + name + '"]');
+        }
+
+        // try css selector if no data-hook is found
+        if (!cache.hooks[name].length) {
+            cache.hooks[name] = $(name);
         }
 
         // debug hooks
@@ -157,32 +162,34 @@ var Hooks = function () {
             return false;
         }
 
+        var hooks = _hooks(hadHook(had), node);
+
         // run action
         switch (fn) {
             case 'open':
-                return doOpen(had);
+                return doOpen(hooks);
             case 'close':
-                return doClose(had);
+                return doClose(hooks);
             case 'toggle':
-                return doToggle(had);
+                return doToggle(hooks);
             case 'show':
-                return doShow(had);
+                return doShow(hooks);
             case 'hide':
-                return doHide(had);
+                return doHide(hooks);
             case 'check':
-                return doCheck(had);
+                return doCheck(hooks);
             case 'uncheck':
-                return doUncheck(had);
+                return doUncheck(hooks);
             case 'focus':
-                return doFocus(had);
+                return doFocus(hooks);
             case 'blur':
-                return doBlur(had);
+                return doBlur(hooks);
             case 'class-add':
-                return doClassAdd(had);
+                return doClassAdd(hooks, hadParams(had));
             case 'class-rmw':
-                return doClassRmw(had);
+                return doClassRmw(hooks, hadParams(had));
             case 'trigger':
-                return doTrigger(had, node);
+                return doTrigger(hooks, hadParams(had), _cnd(hadCond(had), node));
         }
     };
 
@@ -271,7 +278,7 @@ var Hooks = function () {
      * @returns {boolean}
      */
     var isHad = function (had) {
-        return $.isArray(had) && (had.length >= 2 && had.length <= 4);
+        return $.isArray(had) && (had.length >= 1 && had.length <= 4);
     }
 
     /**
@@ -333,9 +340,7 @@ var Hooks = function () {
     /**
      * Open all targeted elements
      */
-    var doOpen = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doOpen = function (hooks) {
 
         if (hooks) {
             hooks.addClass('open');
@@ -347,9 +352,7 @@ var Hooks = function () {
     /**
      * Close all targeted elements
      */
-    var doClose = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doClose = function (hooks) {
 
         if (hooks) {
             hooks.removeClass('open');
@@ -361,9 +364,7 @@ var Hooks = function () {
     /**
      * Toggles all targeted checkboxes
      */
-    var doToggle = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doToggle = function (hooks) {
 
         if (hooks) {
             hooks.toggle();
@@ -375,9 +376,7 @@ var Hooks = function () {
     /**
      * Shows all targeted checkboxes
      */
-    var doShow = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doShow = function (hooks) {
 
         if (hooks) {
             hooks.show();
@@ -389,9 +388,7 @@ var Hooks = function () {
     /**
      * Hide all targeted checkboxes
      */
-    var doHide = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doHide = function (hooks) {
 
         if (hooks) {
             hooks.hide();
@@ -403,9 +400,7 @@ var Hooks = function () {
     /**
      * Check all targeted checkboxes
      */
-    var doCheck = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doCheck = function (hooks) {
 
         if (hooks) {
             hooks.prop('checked', true);
@@ -417,9 +412,7 @@ var Hooks = function () {
     /**
      * Uncheck all targeted checkboxes
      */
-    var doUncheck = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doUncheck = function (hooks) {
 
         if (hooks) {
             hooks.prop('checked', false);
@@ -431,9 +424,7 @@ var Hooks = function () {
     /**
      * Focuses all targeted checkboxes
      */
-    var doFocus = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doFocus = function (hooks) {
 
         if (hooks) {
             hooks.focus();
@@ -445,9 +436,7 @@ var Hooks = function () {
     /**
      * Blur all targeted checkboxes
      */
-    var doBlur = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doBlur = function (hooks) {
 
         if (hooks) {
             hooks.blur();
@@ -459,18 +448,16 @@ var Hooks = function () {
     /**
      * Trigger specified event all targets
      */
-    var doTrigger = function (had, node) {
-
-        var hooks = _hooks(hadHook(had));
+    var doTrigger = function (hooks, params, condition) {
 
         if (hooks) {
 
-            var params = _ternary(hadParams(had));
+            var t = _ternary(params);
 
-            if (_cnd(hadCond(had), node)) {
-                hooks.trigger(params.positive);
+            if (condition) {
+                hooks.trigger(t.positive);
             } else {
-                hooks.trigger(params.negative);
+                hooks.trigger(t.negative);
             }
         }
 
@@ -480,13 +467,10 @@ var Hooks = function () {
     /**
      * Adds class to all targets
      */
-    var doClassAdd = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doClassAdd = function (hooks, params) {
 
         if (hooks) {
-
-            hooks.addClass(hadParams(had));
+            hooks.addClass(params);
         }
 
         //console.log('[done] doClassAdd');
@@ -495,13 +479,10 @@ var Hooks = function () {
     /**
      * Removes class from all targets
      */
-    var doClassRmw = function (had) {
-
-        var hooks = _hooks(hadHook(had));
+    var doClassRmw = function (hooks, params) {
 
         if (hooks) {
-
-            hooks.removeClass(hadParams(had));
+            hooks.removeClass(params);
         }
 
         //console.log('[done] doClassRmw');
