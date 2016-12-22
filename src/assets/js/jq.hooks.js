@@ -14,9 +14,21 @@
  * Each registered hook must have data-hook="{hookName}" attribute.
  * Each trigger element must have data-had="{hookActionDefinition}" attribute
  * ---
- * Hook action definition (data-had) format: {
+ * 1. Hook action definition (data-had) short format: {
  *      'jqEevent' => [
- *          ['hookActionName' 'hookName', 'hookActionCondition', 'hookActionParams],
+ *          ['hookActionName' 'hookName', 'hookActionCondition'],
+ *      ]
+ * }
+ * ---
+ * 2. Hook action definition (data-had) full format: {
+ *      'jqEevent' => [
+ *          [
+ *              'act' => 'hookActionName' 
+ *              'hook' => 'hookName', 
+ *              'cdn' => 'hookActionCondition', 
+ *              'attrs' => 'hookActionParams',
+ *              'cache' => 'true',
+ *          ],
  *      ]
  * }
  * 
@@ -43,7 +55,126 @@
  * ---
  * @see https://api.jquery.com/category/events/
  */
-var Hooks = function () {
+
+/**
+ * ===
+ * Hooks config class
+ * ===
+ * @type CfgHooks
+ */
+
+var CfgHooks = function (_had, _node) {
+
+    /**
+     * Configuration params
+     * @type Object
+     */
+    var _cfg = {
+        act: null,
+        hook: null,
+        cdn: true,
+        cache: true,
+        attrs: [],
+        node: null,
+    }
+
+    /**
+     * Initializer
+     * @param {Array|Object} had
+     * @param {jQuery} node
+     * @returns {null}
+     */
+    var _init = function (had, node) {
+
+        if (had instanceof Array) {
+            had = {
+                act: had[0] || null,
+                hook: had[1] || null,
+                cdn: had[2] || true,
+            };
+        }
+
+        $.extend(_cfg, had);
+
+        _cfg.node = node;
+    }
+
+    // autorun
+    _init.apply(this, [_had, _node]);
+
+    /**
+     * Returns action name
+     * @returns {String}
+     */
+    this.getActionName = function () {
+        return _cfg.act;
+    }
+
+    /**
+     * Returns hook name
+     * @returns {String}
+     */
+    this.getHookName = function () {
+        return _cfg.hook;
+    }
+
+    /**
+     * Returns action attributes
+     * @returns {String|Object|Array}
+     */
+    this.getActionAttrs = function () {
+        return _cfg.attrs;
+    }
+
+    /**
+     * Returns trigger element
+     * @returns {jQuery}
+     */
+    this.getTriggerNode = function () {
+        return _cfg.node;
+    }
+
+    /**
+     * Indicates if action is allowed
+     * @returns {String}
+     */
+    this.isAllowed = function () {
+        return this.cdn(_cfg.cdn, this.getTriggerNode());
+    }
+
+    /**
+     * Indicates if cache is allowed
+     * @returns {String}
+     */
+    this.isCacheable = function () {
+        return _cfg.cache;
+    }
+};
+
+/**
+ * Indicates if action is doable
+ * ---
+ * Runs and retrieve result of 'hookActionCondition'
+ * ---
+ * @returns {boolean}
+ */
+CfgHooks.prototype.cdn = function (cdn, node) {
+
+    if (false === cdn || true === cdn) {
+        return cdn;
+    }
+
+    var fn = new Function(cdn);
+    return fn.apply(node);
+}
+
+/**
+ * ===
+ * Hooks main class
+ * ===
+ * @type Hooks
+ */
+var Hooks = (function () {
 
     /**
      * Hooks cache
@@ -65,6 +196,7 @@ var Hooks = function () {
 
         return node;
     }
+    
     /**
      * Retrieves hook action definition for give event
      * ---
@@ -117,24 +249,27 @@ var Hooks = function () {
     /**
      * Finds and retrieves all hooks with assigned hookNname
      * ---
+     * @param {CfgHooks} cfg
      * @param String name given hookName
      * @return Object
      */
-    var _hooks = function (name, node) {
+    var _hooks = function (cfg) {
 
-        // cancel if name does not exist
-        if (name === undefined) {
-            return node;
+        var name = cfg.getHookName();
+
+        // use trigger itself when hookName is not set
+        if (!name) {
+            return cfg.getTriggerNode();
         }
 
         // cache hooks if they are not yet
-        if (!cache.hooks.hasOwnProperty(name) || null === cache.hooks[name]) {
+        if (!cache.hooks.hasOwnProperty(name) || null === cache.hooks[name] || !cfg.isCacheable()) {
             cache.hooks[name] = $('[data-hook="' + name + '"]');
-        }
 
-        // try css selector if no data-hook is found
-        if (!cache.hooks[name].length) {
-            cache.hooks[name] = $(name);
+            // try css selector if no data-hook is found
+            if (!cache.hooks[name].length) {
+                cache.hooks[name] = $(name);
+            }
         }
 
         // debug hooks
@@ -155,14 +290,16 @@ var Hooks = function () {
 
         e.preventDefault();
 
+        var config = new CfgHooks(had, node);
+
         // get action fn name
-        var fn = _fn(had, node)
+        var fn = _fn(config);
 
         if (false === fn) {
             return false;
         }
 
-        var hooks = _hooks(hadHook(had), node);
+        var hooks = _hooks(config);
 
         // run action
         switch (fn) {
@@ -185,58 +322,27 @@ var Hooks = function () {
             case 'blur':
                 return doBlur(hooks);
             case 'class-add':
-                return doClassAdd(hooks, hadParams(had));
+                return doClassAdd(hooks, config);
             case 'class-rmw':
-                return doClassRmw(hooks, hadParams(had));
+                return doClassRmw(hooks, config);
             case 'trigger':
-                return doTrigger(hooks, hadParams(had), _cnd(hadCond(had), node));
-        }
-    };
-
-    /**
-     * Condition definition process
-     * ---
-     * Retrieves result of condition definition
-     * ---
-     * @param Array had
-     * @param {Object} node
-     * @returns {boolean}
-     */
-    var _cnd = function (df, node) {
-
-        if (false === df || true === df) {
-            return df;
+                return doTrigger(hooks, config);
         }
 
-        var fn = new Function(df);
-        return fn.apply(_jq(node));
-    }
-
-    /**
-     * Indicates if action is doable
-     * ---
-     * Runs and retrieve result of 'hookActionCondition'
-     * ---
-     * @param Array had
-     * @param {Object} node
-     * @returns {boolean}
-     */
-    var _doable = function (had, node) {
-
-        return _cnd(hadCond(had), node);
+        // erase config object reference
+        config = null;
     };
 
     /**
      * Retrieves action function name
-     * @param {Array} had
-     * @param {String|jQuery} node
+     * @param {CfgHooks} cfg
      * @returns {String}
      */
-    var _fn = function (had, node) {
+    var _fn = function (cfg) {
 
-        var ternary = _ternary(hadName(had));
+        var ternary = _ternary(cfg.getActionName());
 
-        if (!_doable(had, node)) {
+        if (!cfg.isAllowed()) {
             return ternary.negative;
         }
 
@@ -271,71 +377,6 @@ var Hooks = function () {
 
         return opts;
     }
-
-    /**
-     * Checks if given action definition is valid
-     * @param {Array} had
-     * @returns {boolean}
-     */
-    var isHad = function (had) {
-        return $.isArray(had) && (had.length >= 1 && had.length <= 4);
-    }
-
-    /**
-     * Retrieves action name
-     * @param {Array} had
-     * @returns {String|Boolean}
-     */
-    var hadName = function (had) {
-        // check if is valid definition
-        if (!isHad(had)) {
-            return false;
-        }
-
-        return had[0];
-    };
-
-    /**
-     * Retrieves action hook
-     * @param {Array} had
-     * @returns {String|Boolean}
-     */
-    var hadHook = function (had) {
-        // check if is valid definition
-        if (!isHad(had)) {
-            return false;
-        }
-
-        return had[1];
-    };
-
-    /**
-     * Retrieves action condition
-     * @param {Array} had
-     * @returns {String|Boolean}
-     */
-    var hadCond = function (had) {
-        // check if is valid definition
-        if (!isHad(had)) {
-            return false;
-        }
-
-        return had[2] || true;
-    };
-
-    /**
-     * Retrieves action params
-     * @param {Array} had
-     * @returns {String|Boolean}
-     */
-    var hadParams = function (had) {
-        // check if is valid definition
-        if (!isHad(had)) {
-            return false;
-        }
-
-        return had[3] || true;
-    };
 
     /**
      * Open all targeted elements
@@ -447,14 +488,16 @@ var Hooks = function () {
 
     /**
      * Trigger specified event all targets
+     * @param {Object} hooks
+     * @param {CfgHooks} config 
      */
-    var doTrigger = function (hooks, params, condition) {
+    var doTrigger = function (hooks, config) {
 
         if (hooks) {
 
-            var t = _ternary(params);
+            var t = _ternary(config.getActionAttrs());
 
-            if (condition) {
+            if (config.isAllowed()) {
                 hooks.trigger(t.positive);
             } else {
                 hooks.trigger(t.negative);
@@ -466,11 +509,13 @@ var Hooks = function () {
 
     /**
      * Adds class to all targets
+     * @param {Object} hooks
+     * @param {CfgHooks} config
      */
-    var doClassAdd = function (hooks, params) {
+    var doClassAdd = function (hooks, config) {
 
         if (hooks) {
-            hooks.addClass(params);
+            hooks.addClass(config.getActionAttrs());
         }
 
         //console.log('[done] doClassAdd');
@@ -478,11 +523,13 @@ var Hooks = function () {
 
     /**
      * Removes class from all targets
+     * @param {Object} hooks
+     * @param {CfgHooks} config
      */
-    var doClassRmw = function (hooks, params) {
+    var doClassRmw = function (hooks, config) {
 
         if (hooks) {
-            hooks.removeClass(params);
+            hooks.removeClass(config.getActionAttrs());
         }
 
         //console.log('[done] doClassRmw');
@@ -494,7 +541,7 @@ var Hooks = function () {
      */
     var actCallback = function (e) {
 
-        var $node = $(e.currentTarget);
+        var $node = _jq(e.currentTarget);
         var defs = _defs($node, e.type);
 
         if (false === defs) {
@@ -564,4 +611,4 @@ var Hooks = function () {
     return {
         init: init,
     };
-}();
+})();
