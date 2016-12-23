@@ -196,7 +196,7 @@ var Hooks = (function () {
 
         return node;
     }
-    
+
     /**
      * Retrieves hook action definition for give event
      * ---
@@ -307,12 +307,16 @@ var Hooks = (function () {
                 return doOpen(hooks);
             case 'close':
                 return doClose(hooks);
-            case 'toggle':
-                return doToggle(hooks);
+            case 'scroll':
+                return doScroll(hooks, config);
             case 'show':
                 return doShow(hooks);
             case 'hide':
                 return doHide(hooks);
+            case 'toggle':
+                return doToggle(hooks);
+            case 'remove':
+                return doRemove(hooks);
             case 'check':
                 return doCheck(hooks);
             case 'uncheck':
@@ -403,15 +407,26 @@ var Hooks = (function () {
     };
 
     /**
-     * Toggles all targeted checkboxes
+     * Scroll all targeted elements
+     * @param {Object} hooks
+     * @param {CfgHooks} config 
      */
-    var doToggle = function (hooks) {
+    var doScroll = function (hooks, config) {
 
         if (hooks) {
-            hooks.toggle();
+
+            var position = _jq(hooks.get(0)).offset().top;
+
+            if (config.getActionAttrs().offset) {
+                position += config.getActionAttrs().offset;
+            }
+
+            var delay = config.getActionAttrs().delay || 1000;
+            
+            $('html, body').animate({scrollTop: position}, delay);
         }
 
-        //console.log('[done] doToggle');
+        //console.log('[done] doScroll');
     };
 
     /**
@@ -437,6 +452,32 @@ var Hooks = (function () {
 
         //console.log('[done] doHide');
     };
+
+    /**
+     * Toggles all targeted checkboxes
+     */
+    var doToggle = function (hooks) {
+
+        if (hooks) {
+            hooks.toggle();
+        }
+
+        //console.log('[done] doToggle');
+    };
+
+    /**
+     * Removes element from DOM
+     * @param {Object} hooks
+     */
+    var doRemove = function (hooks) {
+
+        if (hooks) {
+            hooks.remove();
+        }
+
+        //console.log('[done] doRemove');
+    };
+
 
     /**
      * Check all targeted checkboxes

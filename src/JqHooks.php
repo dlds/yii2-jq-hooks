@@ -25,17 +25,24 @@ class JqHooks extends \yii\base\Module
      */
     const ACT_OPEN = 'open';
     const ACT_CLOSE = 'close';
+    const ACT_SCROLL = 'scroll';
+    // element
     const ACT_SHOW = 'show';
     const ACT_HIDE = 'hide';
     const ACT_TOGGLE = 'toggle';
+    const ACT_REMOVE = 'remove';
+    // checkbox
     const ACT_CHECK = 'check';
     const ACT_UNCHECK = 'uncheck';
+    // target
     const ACT_FOCUS = 'focus';
     const ACT_BLUR = 'blur';
-    const ACT_TRIGGER = 'trigger';
+    // attribute
     const ACT_CLASS_ADD = 'class-add';
     const ACT_CLASS_RMW = 'class-rmw';
     const ACT_CLASS_TGL = self::ACT_CLASS_ADD . ':' . self::ACT_CLASS_RMW;
+    // event
+    const ACT_TRIGGER = 'trigger';
 
     /**
      * @var boolean
