@@ -40,7 +40,8 @@ class JqHooks extends \yii\base\Module
     // attribute
     const ACT_CLASS_ADD = 'class-add';
     const ACT_CLASS_RMW = 'class-rmw';
-    const ACT_CLASS_TGL = self::ACT_CLASS_ADD . ':' . self::ACT_CLASS_RMW;
+    const ACT_CLASS_TGL = 'class-tgl';
+    const ACT_CLASS_TGL_CDN = self::ACT_CLASS_ADD . ':' . self::ACT_CLASS_RMW;
     // event
     const ACT_TRIGGER = 'trigger';
 

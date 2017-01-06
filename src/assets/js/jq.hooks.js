@@ -329,6 +329,8 @@ var Hooks = (function () {
                 return doClassAdd(hooks, config);
             case 'class-rmw':
                 return doClassRmw(hooks, config);
+            case 'class-tgl':
+                return doClassTgl(hooks, config);
             case 'trigger':
                 return doTrigger(hooks, config);
         }
@@ -422,7 +424,7 @@ var Hooks = (function () {
             }
 
             var delay = config.getActionAttrs().delay || 1000;
-            
+
             $('html, body').animate({scrollTop: position}, delay);
         }
 
@@ -571,6 +573,20 @@ var Hooks = (function () {
 
         if (hooks) {
             hooks.removeClass(config.getActionAttrs());
+        }
+
+        //console.log('[done] doClassRmw');
+    };
+
+    /**
+     * Toggles class on all targets
+     * @param {Object} hooks
+     * @param {CfgHooks} config
+     */
+    var doClassTgl = function (hooks, config) {
+
+        if (hooks) {
+            hooks.toggleClass(config.getActionAttrs());
         }
 
         //console.log('[done] doClassRmw');
