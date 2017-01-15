@@ -317,6 +317,8 @@ var Hooks = (function () {
                 return doToggle(hooks);
             case 'remove':
                 return doRemove(hooks);
+            case 'clear':
+                return doClear(hooks);
             case 'check':
                 return doCheck(hooks);
             case 'uncheck':
@@ -478,6 +480,19 @@ var Hooks = (function () {
         }
 
         //console.log('[done] doRemove');
+    };
+
+    /**
+     * Clears elements content
+     * @param {Object} hooks
+     */
+    var doClear = function (hooks) {
+
+        if (hooks) {
+            hooks.empty();
+        }
+
+        //console.log('[done] doClear');
     };
 
 

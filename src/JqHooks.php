@@ -31,6 +31,7 @@ class JqHooks extends \yii\base\Module
     const ACT_HIDE = 'hide';
     const ACT_TOGGLE = 'toggle';
     const ACT_REMOVE = 'remove';
+    const ACT_CLEAR = 'clear';
     // checkbox
     const ACT_CHECK = 'check';
     const ACT_UNCHECK = 'uncheck';
