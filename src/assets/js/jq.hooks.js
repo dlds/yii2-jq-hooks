@@ -73,7 +73,7 @@ var CfgHooks = function (_had, _node) {
         act: null,
         hook: null,
         cdn: true,
-        cache: true,
+        cache: false,
         attrs: [],
         node: null,
     }
