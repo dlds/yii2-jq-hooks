@@ -47,6 +47,7 @@ class JqHooks extends \yii\base\Module
     const ACT_INPUT_CLEAR = 'input-clear';
     const ACT_INPUT_CLEAR_ALL = 'input-clear-all';
     const ACT_INPUT_VAL = 'input-val';
+    const ACT_SUBMIT = 'submit';
     // event
     const ACT_TRIGGER = 'trigger';
 

@@ -327,6 +327,8 @@ var Hooks = (function () {
                 return doFocus(hooks);
             case 'blur':
                 return doBlur(hooks);
+            case 'trigger':
+                return doTrigger(hooks, config);
             case 'class-add':
                 return doClassAdd(hooks, config);
             case 'class-rmw':
@@ -339,8 +341,8 @@ var Hooks = (function () {
                 return doInputClearAll(hooks);
             case 'input-val':
                 return doInputVal(hooks, config);
-            case 'trigger':
-                return doTrigger(hooks, config);
+            case 'submit':
+                return doSubmit(hooks);
         }
 
         // erase config object reference
@@ -651,6 +653,20 @@ var Hooks = (function () {
 
         //console.log('[done] doInputVal');
     };
+
+    /**
+     * Submits all targets
+     * @param {Object} hooks
+     */
+    var doSubmit = function (hooks) {
+
+        if (hooks) {
+            hooks.submit();
+        }
+
+        //console.log('[done] doSubmit');
+    };
+
     /**
      * Default action callback
      * @param {Event} e
