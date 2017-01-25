@@ -43,6 +43,10 @@ class JqHooks extends \yii\base\Module
     const ACT_CLASS_RMW = 'class-rmw';
     const ACT_CLASS_TGL = 'class-tgl';
     const ACT_CLASS_TGL_CDN = self::ACT_CLASS_ADD . ':' . self::ACT_CLASS_RMW;
+    // input
+    const ACT_INPUT_CLEAR = 'input-clear';
+    const ACT_INPUT_CLEAR_ALL = 'input-clear-all';
+    const ACT_INPUT_VAL = 'input-val';
     // event
     const ACT_TRIGGER = 'trigger';
 

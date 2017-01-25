@@ -333,6 +333,12 @@ var Hooks = (function () {
                 return doClassRmw(hooks, config);
             case 'class-tgl':
                 return doClassTgl(hooks, config);
+            case 'input-clear':
+                return doInputClear(hooks);
+            case 'input-clear-all':
+                return doInputClearAll(hooks);
+            case 'input-val':
+                return doInputVal(hooks, config);
             case 'trigger':
                 return doTrigger(hooks, config);
         }
@@ -607,6 +613,44 @@ var Hooks = (function () {
         //console.log('[done] doClassRmw');
     };
 
+    /**
+     * Clears all targeted inputs
+     * @param {Object} hooks
+     */
+    var doInputClear = function (hooks) {
+
+        if (hooks) {
+            hooks.val('');
+        }
+
+        //console.log('[done] doInputClear');
+    };
+
+    /**
+     * Clears all descendant inputs of all targets
+     * @param {Object} hooks
+     */
+    var doInputClearAll = function (hooks) {
+
+        if (hooks) {
+            hooks.find('input').val('');
+        }
+
+        //console.log('[done] doInputClearAll');
+    };
+
+    /**
+     * Sets value of targeted inputs
+     * @param {Object} hooks
+     */
+    var doInputVal = function (hooks, config) {
+
+        if (hooks) {
+            hooks.val(config.getActionAttrs());
+        }
+
+        //console.log('[done] doInputVal');
+    };
     /**
      * Default action callback
      * @param {Event} e
