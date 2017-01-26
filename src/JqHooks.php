@@ -10,6 +10,7 @@
 namespace dlds\jqhooks;
 
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 
 /**
  * This is the main module class for the Giixer module.
@@ -80,6 +81,25 @@ class JqHooks extends \yii\base\Module
         }
 
         return $had;
+    }
+
+    /**
+     * Attaches HAD definition to pure html tag
+     * ---
+     * Example: <div data-had=<?= JqHooks::attachToHtml(...) ?>>
+     * Standart Html tag quotations are omitted.
+     * ---
+     * @param array $had
+     * @param boolean $init
+     * @return \yii\web\JsExpression
+     */
+    public static function attachToHtml($had, $init = true)
+    {
+        if ($init) {
+            static::initJs();
+        }
+
+        return Json::htmlEncode($had);
     }
 
     /**
