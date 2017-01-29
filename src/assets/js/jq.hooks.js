@@ -94,7 +94,7 @@ var CfgHooks = function (_had, _node) {
             };
         }
 
-        $.extend(_cfg, had);
+        jQuery.extend(_cfg, had);
 
         _cfg.node = node;
     }
@@ -191,7 +191,7 @@ var Hooks = (function () {
      */
     var _jq = function (node) {
         if (!(node instanceof jQuery)) {
-            node = $(node);
+            node = jQuery(node);
         }
 
         return node;
@@ -232,7 +232,7 @@ var Hooks = (function () {
 
         // get document as parent if explicit parent is not given
         if (!context || !context.length) {
-            context = $(document);
+            context = jQuery(document);
         }
 
         // find all elements basen on given selector
@@ -264,11 +264,11 @@ var Hooks = (function () {
 
         // cache hooks if they are not yet
         if (!cache.hooks.hasOwnProperty(name) || null === cache.hooks[name] || !cfg.isCacheable()) {
-            cache.hooks[name] = $('[data-hook="' + name + '"]');
+            cache.hooks[name] = jQuery('[data-hook="' + name + '"]');
 
             // try css selector if no data-hook is found
             if (!cache.hooks[name].length) {
-                cache.hooks[name] = $(name);
+                cache.hooks[name] = _jqHook(name, cfg.getTriggerNode());
             }
         }
 
@@ -278,6 +278,26 @@ var Hooks = (function () {
         // retrieves cached hooks
         return cache.hooks[name];
     };
+
+    /**
+     * Finds and hook using extended jQuery selectors
+     * ---
+     * @param {CfgHooks} cfg
+     * @param String node given node
+     * @return Object
+     */
+    var _jqHook = function (expr, node) {
+
+        if (0 == expr.indexOf('closest ')) {
+            return node.closest(expr.substr(8));
+        }
+
+        if (0 == expr.indexOf('find ')) {
+            return node.find(expr.substr(5));
+        }
+
+        return _jq(expr);
+    }
 
     /**
      * Run action based on hook action definition
@@ -383,7 +403,7 @@ var Hooks = (function () {
 
         var names = df.split(':');
 
-        if (!$.isArray(names)) {
+        if (!jQuery.isArray(names)) {
             opts.positive = df;
             return opts;
         }
@@ -435,7 +455,7 @@ var Hooks = (function () {
 
             var delay = config.getActionAttrs().delay || 1000;
 
-            $('html, body').animate({scrollTop: position}, delay);
+            jQuery('html, body').animate({scrollTop: position}, delay);
         }
 
         //console.log('[done] doScroll');
@@ -680,7 +700,7 @@ var Hooks = (function () {
             return false;
         }
 
-        $.each(defs, function (i, had) {
+        jQuery.each(defs, function (i, had) {
             _do(e, had, $node);
         });
     };
@@ -716,7 +736,7 @@ var Hooks = (function () {
                 return;
             }
 
-            $.each(defs, function (evt) {
+            jQuery.each(defs, function (evt) {
 
                 //console.log('Att:', evt, actCallback);
 
@@ -734,7 +754,7 @@ var Hooks = (function () {
      * @returns {Boolean}
      */
     var init = function (context) {
-        return actInit(context || $(document));
+        return actInit(context || jQuery(document));
     };
 
     /**
