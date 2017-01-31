@@ -99,7 +99,7 @@ class JqHooks extends \yii\base\Module
             static::initJs();
         }
 
-        return Json::htmlEncode($had);
+        return sprintf("'%s'", Json::htmlEncode($had));
     }
 
     /**
