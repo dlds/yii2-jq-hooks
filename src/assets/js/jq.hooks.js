@@ -420,7 +420,7 @@ var Hooks = (function () {
     var doOpen = function (hooks) {
 
         if (hooks) {
-            hooks.addClass('open');
+            hooks.addClass('open').trigger('open');
         }
 
         //console.log('[done] doOpen');
@@ -432,7 +432,7 @@ var Hooks = (function () {
     var doClose = function (hooks) {
 
         if (hooks) {
-            hooks.removeClass('open');
+            hooks.removeClass('open').trigger('close');
         }
 
         //console.log('[done] doClose');
