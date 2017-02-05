@@ -76,6 +76,7 @@ var CfgHooks = function (_had, _node) {
         cache: false,
         attrs: [],
         node: null,
+        prevent: true,
     }
 
     /**
@@ -148,6 +149,14 @@ var CfgHooks = function (_had, _node) {
      */
     this.isCacheable = function () {
         return _cfg.cache;
+    }
+
+    /**
+     * Indicates if default action is prevented
+     * @returns {String}
+     */
+    this.isDefaultPrevented = function () {
+        return _cfg.prevent;
     }
 };
 
@@ -308,10 +317,12 @@ var Hooks = (function () {
      */
     var _do = function (e, had, node) {
 
-        e.preventDefault();
-
         var config = new CfgHooks(had, node);
 
+        if (config.isDefaultPrevented()) {
+            e.preventDefault();
+        }
+        
         // get action fn name
         var fn = _fn(config);
 
