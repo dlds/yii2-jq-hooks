@@ -24,6 +24,8 @@ class JqHooks extends \yii\base\Module
     /**
      * Available actions
      */
+    const ACT_DO = 'do';
+    // open & close
     const ACT_OPEN = 'open';
     const ACT_CLOSE = 'close';
     const ACT_SCROLL = 'scroll';

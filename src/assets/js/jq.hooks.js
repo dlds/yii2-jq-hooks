@@ -322,7 +322,7 @@ var Hooks = (function () {
         if (config.isDefaultPrevented()) {
             e.preventDefault();
         }
-        
+
         // get action fn name
         var fn = _fn(config);
 
@@ -334,6 +334,8 @@ var Hooks = (function () {
 
         // run action
         switch (fn) {
+            case 'do':
+                return doJs(config);
             case 'open':
                 return doOpen(hooks);
             case 'close':
@@ -424,6 +426,17 @@ var Hooks = (function () {
 
         return opts;
     }
+
+    /**
+     * Process js callback
+     */
+    var doJs = function (config) {
+
+        var fn = new Function(config.getActionAttrs());
+        fn.apply(this);
+
+        //console.log('[done] doJs');
+    };
 
     /**
      * Open all targeted elements
